@@ -9,6 +9,8 @@ from pufferlib.ocean.drive import binding
 from multiprocessing import Pool, cpu_count
 from tqdm import tqdm
 
+_PACKAGE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+_INI_FILE = os.path.join(_PACKAGE_DIR, "config", "ocean", "drive.ini")
 
 class RenderView(IntEnum):
     FULL_SIM_STATE = 0  # Orthographic top-down, fully observable simulator state
@@ -197,7 +199,7 @@ class Drive(pufferlib.PufferEnv):
                 termination_mode=(int(self.termination_mode) if self.termination_mode is not None else 0),
                 map_id=map_ids[i],
                 max_agents=nxt - cur,
-                ini_file="pufferlib/config/ocean/drive.ini",
+                ini_file=_INI_FILE,
                 init_steps=init_steps,
                 init_mode=self.init_mode,
                 control_mode=self.control_mode,
@@ -262,7 +264,7 @@ class Drive(pufferlib.PufferEnv):
                 episode_length=(int(self.episode_length) if self.episode_length is not None else None),
                 map_id=map_ids[i],
                 max_agents=nxt - cur,
-                ini_file="pufferlib/config/ocean/drive.ini",
+                ini_file=_INI_FILE,
                 init_steps=self.init_steps,
                 init_mode=self.init_mode,
                 control_mode=self.control_mode,
