@@ -401,6 +401,34 @@ class Drive(pufferlib.PufferEnv):
         polylines["scenario_id"] = polylines["scenario_id"].astype(str)
 
         return polylines
+    
+    def get_road_lane_polylines(self):
+        """Get road lane polylines for all scenarios.
+
+        Returns:
+            dict with keys 'x', 'y', 'lengths', 'scenario_id' containing numpy arrays.
+            x, y are flattened point coordinates; lengths indicates points per polyline.
+        """
+        num_polylines, total_points = binding.vec_get_road_lane_counts(self.c_envs)
+
+        polylines = {
+            "x": np.zeros(total_points, dtype=np.float32),
+            "y": np.zeros(total_points, dtype=np.float32),
+            "lengths": np.zeros(num_polylines, dtype=np.int32),
+            "scenario_id": np.zeros(num_polylines, dtype="S16"),
+        }
+
+        binding.vec_get_road_lane_polylines(
+            self.c_envs,
+            polylines["x"],
+            polylines["y"],
+            polylines["lengths"],
+            polylines["scenario_id"],
+        )
+
+        polylines["scenario_id"] = polylines["scenario_id"].astype(str)
+
+        return polylines
 
     def render(self, view_mode: RenderView = RenderView.FULL_SIM_STATE, draw_traces: bool = True, env_id: int = 0):
         binding.vec_render(self.c_envs, int(view_mode), draw_traces, env_id)
