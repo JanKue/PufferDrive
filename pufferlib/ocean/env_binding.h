@@ -709,7 +709,7 @@ static PyObject *vec_get_scenario_ids(PyObject *self, PyObject *args) {
 
 static PyObject *get_global_agent_state(PyObject *self, PyObject *args) {
     if (PyTuple_Size(args) != 7) {
-        PyErr_SetString(PyExc_TypeError, "get_global_agent_state requires 7 arguments");
+        PyErr_SetString(PyExc_TypeError, "get_global_agent_state requires 10 arguments");
         return NULL;
     }
 
@@ -728,9 +728,13 @@ static PyObject *get_global_agent_state(PyObject *self, PyObject *args) {
     PyObject *id_arr = PyTuple_GetItem(args, 5);
     PyObject *length_arr = PyTuple_GetItem(args, 6);
     PyObject *width_arr = PyTuple_GetItem(args, 7);
+    PyObject *vx_arr = PyTuple_GetItem(args, 8);
+    PyObject *vy_arr = PyTuple_GetItem(args, 9);
+    PyObject *vz_arr = PyTuple_GetItem(args, 10);
 
     if (!PyArray_Check(x_arr) || !PyArray_Check(y_arr) || !PyArray_Check(z_arr) || !PyArray_Check(heading_arr) ||
-        !PyArray_Check(id_arr) || !PyArray_Check(length_arr) || !PyArray_Check(width_arr)) {
+        !PyArray_Check(id_arr) || !PyArray_Check(length_arr) || !PyArray_Check(width_arr) ||
+        !PyArray_Check(vx_arr) || !PyArray_Check(vy_arr) || !PyArray_Check(vz_arr)) {
         PyErr_SetString(PyExc_TypeError, "All output arrays must be NumPy arrays");
         return NULL;
     }
@@ -742,14 +746,17 @@ static PyObject *get_global_agent_state(PyObject *self, PyObject *args) {
     int *id_data = (int *)PyArray_DATA((PyArrayObject *)id_arr);
     float *length_data = (float *)PyArray_DATA((PyArrayObject *)length_arr);
     float *width_data = (float *)PyArray_DATA((PyArrayObject *)width_arr);
+    float *vx_data = (float *)PyArray_DATA((PyArrayObject *)vx_arr);
+    float *vy_data = (float *)PyArray_DATA((PyArrayObject *)vy_arr);
+    float *vz_data = (float *)PyArray_DATA((PyArrayObject *)vz_arr);
 
-    c_get_global_agent_state(drive, x_data, y_data, z_data, heading_data, id_data, length_data, width_data);
+    c_get_global_agent_state(drive, x_data, y_data, z_data, heading_data, id_data, length_data, width_data, vx_data, vy_data, vz_data);
 
     Py_RETURN_NONE;
 }
 static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
-    if (PyTuple_Size(args) != 8) {
-        PyErr_SetString(PyExc_TypeError, "vec_get_global_agent_state requires 8 arguments");
+    if (PyTuple_Size(args) != 11) {
+        PyErr_SetString(PyExc_TypeError, "vec_get_global_agent_state requires 11 arguments");
         return NULL;
     }
 
@@ -766,9 +773,13 @@ static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
     PyObject *id_arr = PyTuple_GetItem(args, 5);
     PyObject *length_arr = PyTuple_GetItem(args, 6);
     PyObject *width_arr = PyTuple_GetItem(args, 7);
+    PyObject *vx_arr = PyTuple_GetItem(args, 8);
+    PyObject *vy_arr = PyTuple_GetItem(args, 9);
+    PyObject *vz_arr = PyTuple_GetItem(args, 10);
 
     if (!PyArray_Check(x_arr) || !PyArray_Check(y_arr) || !PyArray_Check(z_arr) || !PyArray_Check(heading_arr) ||
-        !PyArray_Check(id_arr) || !PyArray_Check(length_arr) || !PyArray_Check(width_arr)) {
+        !PyArray_Check(id_arr) || !PyArray_Check(length_arr) || !PyArray_Check(width_arr) ||
+        !PyArray_Check(vx_arr) || !PyArray_Check(vy_arr) || !PyArray_Check(vz_arr)) {
         PyErr_SetString(PyExc_TypeError, "All output arrays must be NumPy arrays");
         return NULL;
     }
@@ -780,6 +791,9 @@ static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
     PyArrayObject *id_array = (PyArrayObject *)id_arr;
     PyArrayObject *length_array = (PyArrayObject *)length_arr;
     PyArrayObject *width_array = (PyArrayObject *)width_arr;
+    PyArrayObject *vx_array = (PyArrayObject *)vx_arr;
+    PyArrayObject *vy_array = (PyArrayObject *)vy_arr;
+    PyArrayObject *vz_array = (PyArrayObject *)vz_arr;
 
     // Get base pointers to the arrays
     float *x_base = (float *)PyArray_DATA(x_array);
@@ -789,6 +803,9 @@ static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
     int *id_base = (int *)PyArray_DATA(id_array);
     float *length_base = (float *)PyArray_DATA(length_array);
     float *width_base = (float *)PyArray_DATA(width_array);
+    float *vx_base = (float *)PyArray_DATA(vx_array);
+    float *vy_base = (float *)PyArray_DATA(vy_array);
+    float *vz_base = (float *)PyArray_DATA(vz_array);
 
     // Iterate through environments and write to correct offsets
     int offset = 0;
@@ -797,7 +814,8 @@ static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
 
         // Write to the arrays at the current offset
         c_get_global_agent_state(drive, &x_base[offset], &y_base[offset], &z_base[offset], &heading_base[offset],
-                                 &id_base[offset], &length_base[offset], &width_base[offset]);
+                                 &id_base[offset], &length_base[offset], &width_base[offset],
+                                 &vx_base[offset], &vy_base[offset], &vz_base[offset]);
 
         // Move offset forward by the number of agents in this environment
         offset += drive->active_agent_count;
