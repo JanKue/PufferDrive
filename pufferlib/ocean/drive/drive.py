@@ -51,6 +51,7 @@ class Drive(pufferlib.PufferEnv):
         control_mode="control_vehicles",
         max_controlled_agents=32,
         map_dir="resources/drive/binaries/training",
+        max_num_envs=-1, # set to positive integer to limit the number of environments
     ):
         # env
         self.dt = dt
@@ -73,6 +74,7 @@ class Drive(pufferlib.PufferEnv):
         self.resample_frequency = resample_frequency
         self.dynamics_model = dynamics_model
         self.max_controlled_agents = max_controlled_agents
+        self.max_num_envs = max_num_envs
 
         # Observation space calculation
         self.ego_features = {"classic": binding.EGO_FEATURES_CLASSIC, "jerk": binding.EGO_FEATURES_JERK}.get(
@@ -169,6 +171,8 @@ class Drive(pufferlib.PufferEnv):
         self.num_agents = agent_offsets[-1]
         self.agent_offsets = agent_offsets
         self.map_ids = map_ids
+        if self.max_num_envs > 0: # override num_envs if a maximum is defined
+            num_envs = self.max_num_envs
         self.num_envs = num_envs
         super().__init__(buf=buf)
         self.env_ids = []
@@ -235,6 +239,8 @@ class Drive(pufferlib.PufferEnv):
         )
         self.agent_offsets = agent_offsets
         self.map_ids = map_ids
+        if self.max_num_envs > 0: # override num_envs if a maximum is defined
+            num_envs = self.max_num_envs
         self.num_envs = num_envs
         self.env_ids = []
         seed = np.random.randint(0, 2**32 - 1)
