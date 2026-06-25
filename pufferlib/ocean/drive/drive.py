@@ -312,7 +312,8 @@ class Drive(pufferlib.PufferEnv):
         """Get current global state of all active agents.
 
         Returns:
-            dict with keys 'x', 'y', 'z', 'heading', 'id', 'length', 'width', 'vx', 'vy', 'vz'
+            dict with keys 'x', 'y', 'z', 'heading', 'id', 'length', 'width',
+                'vx', 'vy', 'vz', 'goalx', 'goaly', 'goalz';
             containing numpy arrays of shape (num_active_agents,)
         """
         num_agents = self.num_agents
@@ -328,6 +329,9 @@ class Drive(pufferlib.PufferEnv):
             "vx": np.zeros(num_agents, dtype=np.float32),
             "vy": np.zeros(num_agents, dtype=np.float32),
             "vz": np.zeros(num_agents, dtype=np.float32),
+            "goalx": np.zeros(num_agents, dtype=np.float32),
+            "goaly": np.zeros(num_agents, dtype=np.float32),
+            "goalz": np.zeros(num_agents, dtype=np.float32),
         }
 
         binding.vec_get_global_agent_state(
@@ -342,6 +346,9 @@ class Drive(pufferlib.PufferEnv):
             states["vx"],
             states["vy"],
             states["vz"],
+            states["goalx"],
+            states["goaly"],
+            states["goalz"],
         )
 
         return states

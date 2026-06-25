@@ -708,8 +708,8 @@ static PyObject *vec_get_scenario_ids(PyObject *self, PyObject *args) {
 }
 
 static PyObject *get_global_agent_state(PyObject *self, PyObject *args) {
-    if (PyTuple_Size(args) != 7) {
-        PyErr_SetString(PyExc_TypeError, "get_global_agent_state requires 10 arguments");
+    if (PyTuple_Size(args) != 13) {
+        PyErr_SetString(PyExc_TypeError, "get_global_agent_state requires 13 arguments");
         return NULL;
     }
 
@@ -731,10 +731,14 @@ static PyObject *get_global_agent_state(PyObject *self, PyObject *args) {
     PyObject *vx_arr = PyTuple_GetItem(args, 8);
     PyObject *vy_arr = PyTuple_GetItem(args, 9);
     PyObject *vz_arr = PyTuple_GetItem(args, 10);
+    PyObject *goalx_arr = PyTuple_GetItem(args, 11);
+    PyObject *goaly_arr = PyTuple_GetItem(args, 12);
+    PyObject *goalz_arr = PyTuple_GetItem(args, 13);
 
     if (!PyArray_Check(x_arr) || !PyArray_Check(y_arr) || !PyArray_Check(z_arr) || !PyArray_Check(heading_arr) ||
         !PyArray_Check(id_arr) || !PyArray_Check(length_arr) || !PyArray_Check(width_arr) ||
-        !PyArray_Check(vx_arr) || !PyArray_Check(vy_arr) || !PyArray_Check(vz_arr)) {
+        !PyArray_Check(vx_arr) || !PyArray_Check(vy_arr) || !PyArray_Check(vz_arr) ||
+        !PyArray_Check(goalx_arr) || !PyArray_Check(goaly_arr) || !PyArray_Check(goalz_arr) ) {
         PyErr_SetString(PyExc_TypeError, "All output arrays must be NumPy arrays");
         return NULL;
     }
@@ -749,14 +753,18 @@ static PyObject *get_global_agent_state(PyObject *self, PyObject *args) {
     float *vx_data = (float *)PyArray_DATA((PyArrayObject *)vx_arr);
     float *vy_data = (float *)PyArray_DATA((PyArrayObject *)vy_arr);
     float *vz_data = (float *)PyArray_DATA((PyArrayObject *)vz_arr);
+    float *goalx_data = (float *)PyArray_DATA((PyArrayObject *)goalx_arr);
+    float *goaly_data = (float *)PyArray_DATA((PyArrayObject *)goaly_arr);
+    float *goalz_data = (float *)PyArray_DATA((PyArrayObject *)goalz_arr);
 
-    c_get_global_agent_state(drive, x_data, y_data, z_data, heading_data, id_data, length_data, width_data, vx_data, vy_data, vz_data);
+    c_get_global_agent_state(drive, x_data, y_data, z_data, heading_data, id_data, length_data, width_data,
+        vx_data, vy_data, vz_data, goalx_data, goaly_data, goalz_data);
 
     Py_RETURN_NONE;
 }
 static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
-    if (PyTuple_Size(args) != 11) {
-        PyErr_SetString(PyExc_TypeError, "vec_get_global_agent_state requires 11 arguments");
+    if (PyTuple_Size(args) != 14) {
+        PyErr_SetString(PyExc_TypeError, "vec_get_global_agent_state requires 14 arguments");
         return NULL;
     }
 
@@ -776,10 +784,14 @@ static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
     PyObject *vx_arr = PyTuple_GetItem(args, 8);
     PyObject *vy_arr = PyTuple_GetItem(args, 9);
     PyObject *vz_arr = PyTuple_GetItem(args, 10);
+    PyObject *goalx_arr = PyTuple_GetItem(args, 11);
+    PyObject *goaly_arr = PyTuple_GetItem(args, 12);
+    PyObject *goalz_arr = PyTuple_GetItem(args, 13);
 
     if (!PyArray_Check(x_arr) || !PyArray_Check(y_arr) || !PyArray_Check(z_arr) || !PyArray_Check(heading_arr) ||
         !PyArray_Check(id_arr) || !PyArray_Check(length_arr) || !PyArray_Check(width_arr) ||
-        !PyArray_Check(vx_arr) || !PyArray_Check(vy_arr) || !PyArray_Check(vz_arr)) {
+        !PyArray_Check(vx_arr) || !PyArray_Check(vy_arr) || !PyArray_Check(vz_arr) ||
+        !PyArray_Check(goalx_arr) || !PyArray_Check(goaly_arr) || !PyArray_Check(goalz_arr) ) {
         PyErr_SetString(PyExc_TypeError, "All output arrays must be NumPy arrays");
         return NULL;
     }
@@ -794,6 +806,9 @@ static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
     PyArrayObject *vx_array = (PyArrayObject *)vx_arr;
     PyArrayObject *vy_array = (PyArrayObject *)vy_arr;
     PyArrayObject *vz_array = (PyArrayObject *)vz_arr;
+    PyArrayObject *goalx_array = (PyArrayObject *)goalx_arr;
+    PyArrayObject *goaly_array = (PyArrayObject *)goaly_arr;
+    PyArrayObject *goalz_array = (PyArrayObject *)goalz_arr;
 
     // Get base pointers to the arrays
     float *x_base = (float *)PyArray_DATA(x_array);
@@ -806,6 +821,9 @@ static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
     float *vx_base = (float *)PyArray_DATA(vx_array);
     float *vy_base = (float *)PyArray_DATA(vy_array);
     float *vz_base = (float *)PyArray_DATA(vz_array);
+    float *goalx_base = (float *)PyArray_DATA(goalx_array);
+    float *goaly_base = (float *)PyArray_DATA(goaly_array);
+    float *goalz_base = (float *)PyArray_DATA(goalz_array);
 
     // Iterate through environments and write to correct offsets
     int offset = 0;
@@ -815,7 +833,8 @@ static PyObject *vec_get_global_agent_state(PyObject *self, PyObject *args) {
         // Write to the arrays at the current offset
         c_get_global_agent_state(drive, &x_base[offset], &y_base[offset], &z_base[offset], &heading_base[offset],
                                  &id_base[offset], &length_base[offset], &width_base[offset],
-                                 &vx_base[offset], &vy_base[offset], &vz_base[offset]);
+                                 &vx_base[offset], &vy_base[offset], &vz_base[offset],
+                                 &goalx_base[offset], &goaly_base[offset], &goalz_base[offset]);
 
         // Move offset forward by the number of agents in this environment
         offset += drive->active_agent_count;

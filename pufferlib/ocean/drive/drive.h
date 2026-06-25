@@ -1733,7 +1733,8 @@ static inline int is_in_track_to_predicts(Drive *env, int agent_idx) {
 }
 
 void c_get_global_agent_state(Drive *env, float *x_out, float *y_out, float *z_out, float *heading_out, int *id_out,
-                              float *length_out, float *width_out, float *vx_out, float *vy_out, float *vz_out) {
+                              float *length_out, float *width_out, float *vx_out, float *vy_out, float *vz_out,
+                              float *goalx_out, float *goaly_out, float *goalz_out) {
     for (int i = 0; i < env->active_agent_count; i++) {
         int agent_idx = env->active_agent_indices[i];
         Entity *agent = &env->entities[agent_idx];
@@ -1749,6 +1750,9 @@ void c_get_global_agent_state(Drive *env, float *x_out, float *y_out, float *z_o
         vx_out[i] = agent->vx;
         vy_out[i] = agent->vy;
         vz_out[i] = agent->vz;
+        goalx_out[i] = agent->goal_position_x + env->world_mean_x; // + env->world_mean_x
+        goaly_out[i] = agent->goal_position_y + env->world_mean_y; // + env->world_mean_y
+        goalz_out[i] = agent->goal_position_z;
     }
 }
 
