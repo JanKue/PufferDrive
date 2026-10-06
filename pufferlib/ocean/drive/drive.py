@@ -98,6 +98,7 @@ class Drive(pufferlib.PufferEnv):
         self.init_steps = init_steps
         self.init_mode_str = init_mode
         self.control_mode_str = control_mode
+        map_dir = os.path.join(_PACKAGE_DIR, map_dir) # don't rely on implicit resolution of relative path being correct
         self.map_dir = map_dir
 
         if self.control_mode_str == "control_vehicles":
@@ -143,6 +144,7 @@ class Drive(pufferlib.PufferEnv):
 
         # Check if resources directory exists
         binary_path = f"{map_dir}/map_000.bin"
+        breakpoint()
         if not os.path.exists(binary_path):
             raise FileNotFoundError(
                 f"Required directory {binary_path} not found. Please ensure the Drive maps are downloaded and installed correctly per docs."
