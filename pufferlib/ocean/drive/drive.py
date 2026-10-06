@@ -144,7 +144,6 @@ class Drive(pufferlib.PufferEnv):
 
         # Check if resources directory exists
         binary_path = f"{map_dir}/map_000.bin"
-        breakpoint()
         if not os.path.exists(binary_path):
             raise FileNotFoundError(
                 f"Required directory {binary_path} not found. Please ensure the Drive maps are downloaded and installed correctly per docs."
