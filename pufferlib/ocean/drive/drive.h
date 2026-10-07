@@ -1743,7 +1743,7 @@ void c_get_global_agent_state(Drive *env, float *x_out, float *y_out, float *z_o
         x_out[i] = agent->x + env->world_mean_x;
         y_out[i] = agent->y + env->world_mean_y;
         z_out[i] = agent->z;
-        heading_out[i] = agent->heading;
+        heading_out[i] = normalize_heading(agent->heading);
         id_out[i] = agent->id;
         length_out[i] = agent->length;
         width_out[i] = agent->width;
@@ -1775,7 +1775,7 @@ void c_get_global_ground_truth_trajectories(Drive *env, float *x_out, float *y_o
             x_out[out_idx] = agent->traj_x[t] + env->world_mean_x;
             y_out[out_idx] = agent->traj_y[t] + env->world_mean_y;
             z_out[out_idx] = agent->traj_z[t];
-            heading_out[out_idx] = agent->traj_heading[t];
+            heading_out[out_idx] = normalize_heading(agent->traj_heading[t]);
             valid_out[out_idx] = agent->traj_valid[t];
         }
     }
