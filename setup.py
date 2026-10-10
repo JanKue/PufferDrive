@@ -310,7 +310,7 @@ install_requires = [
     "numpy<2.0",
     "shimmy[gym-v21]",
     "gym==0.23",
-    "gymnasium==0.29.1",
+    "gymnasium<=1.4.0",
     "pettingzoo==1.24.1",
 ]
 
