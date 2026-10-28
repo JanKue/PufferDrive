@@ -333,6 +333,7 @@ class Drive(pufferlib.PufferEnv):
             "goalx": np.zeros(num_agents, dtype=np.float32),
             "goaly": np.zeros(num_agents, dtype=np.float32),
             "goalz": np.zeros(num_agents, dtype=np.float32),
+            "collision": np.zeros(num_agents, dtype=np.float32),
         }
 
         binding.vec_get_global_agent_state(
@@ -350,6 +351,10 @@ class Drive(pufferlib.PufferEnv):
             states["goalx"],
             states["goaly"],
             states["goalz"],
+        )
+        binding.vec_check_collisions(
+            self.c_envs,
+            states["collision"],
         )
 
         return states

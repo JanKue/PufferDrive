@@ -1074,6 +1074,36 @@ static PyObject *vec_get_road_lane_polylines(PyObject *self, PyObject *args) {
     Py_RETURN_NONE;
 }
 
+static PyObject *vec_check_collisions(PyObject *self, PyObject *args) {
+    if (PyTuple_Size(args) != 2) {
+        PyErr_SetString(PyExc_TypeError, "vec_check_collisions requires 2 arguments");
+        return NULL;
+    }
+
+    VecEnv *vec = unpack_vecenv(args);
+    if (!vec)
+        return NULL;
+
+    PyObject *collisions_arr = PyTuple_GetItem(args, 1);
+    
+    if (!PyArray_Check(collisions_arr)) {
+        PyErr_SetString(PyExc_TypeError, "All output arrays must be NumPy arrays");
+        return NULL;
+    }
+
+    float *collisions_base = (float *)PyArray_DATA((PyArrayObject *)collisions_arr);
+
+    int offset = 0;
+    for (int i = 0; i < vec->num_envs; i++) {
+        Drive *drive = (Drive *)vec->envs[i];
+        for (int j = 0; j < drive->num_agents; j++) {
+            collisions_base[offset] = collision_check(drive, j);
+            offset++;
+        }
+    }
+    Py_RETURN_NONE;
+}
+
 static double unpack(PyObject *kwargs, char *key) {
     PyObject *val = PyDict_GetItemString(kwargs, key);
     if (val == NULL) {
@@ -1161,6 +1191,8 @@ static PyMethodDef methods[] = {
      "Get road lane polyline counts from vectorized env"},
     {"vec_get_road_lane_polylines", vec_get_road_lane_polylines, METH_VARARGS,
      "Get road lane polylines from vectorized env"},
+    {"vec_check_collisions", vec_check_collisions, METH_VARARGS,
+     "Check agent collisions in vectorized env"},
     MY_METHODS,
     {NULL, NULL, 0, NULL}};
 
